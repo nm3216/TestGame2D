@@ -12,18 +12,24 @@ public class PlayerController : MonoBehaviour
     public int needleSpeed;
 	private bool ifFriction;
 	private bool ifSlippery;
-
+	private bool ifCollided;
 
     private Rigidbody2D rb;
+	private Transform tf;
     private int angle;
+	private float x;
+	private float y;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        winText.text = "";
+
         angle = 0;
 		ifFriction = false;
+		ifCollided = false;
 		ifSlippery = false;
+		Debug.Log ("started\t");
+
     }
 
     void OnGUI()
@@ -49,6 +55,12 @@ public class PlayerController : MonoBehaviour
 			rb.drag = 1f;
 		}
 
+		if (ifCollided == true) {
+			if(
+			tf = GetComponent<Transform>();
+			tf.localScale -= new Vector3(0.1f, 0.01f, 0);
+			ifCollided = false;
+		}
 
         if (Input.GetKeyDown("space"))
         {
@@ -58,24 +70,14 @@ public class PlayerController : MonoBehaviour
             Vector2 movement = new Vector2(moveHorizontal, moveVertical);
             rb.AddForce(movement * speed );
         }
-
-        if (sizeSlider.value == 0)
-        {
-            winText.text = "Level Cleared!";
-        }
+			
 
 
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-		if (other.gameObject.CompareTag ("Pickup")) {
-			other.gameObject.SetActive (false);
-			sizeSlider.value += 10;
-		} else if (other.gameObject.CompareTag ("Getthin")) {
-			other.gameObject.SetActive (false);
-			sizeSlider.value -= 10;
-		} else if (other.gameObject.CompareTag ("Friction")) {
+		if (other.gameObject.CompareTag ("Friction")) {
 			ifFriction = true;
 			ifSlippery = false;
 		} else if (other.gameObject.CompareTag ("NonFriction")) {
@@ -92,7 +94,8 @@ public class PlayerController : MonoBehaviour
         Collider2D other = collision.collider;
         if (other.gameObject.CompareTag("Wall"))
         {
-            sizeSlider.value -= 10;
+			ifCollided = true;
+			Debug.Log ("collided");
 		}
     }
 		
