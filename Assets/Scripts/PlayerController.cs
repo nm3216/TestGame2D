@@ -5,8 +5,8 @@ using System.Collections;
 public class PlayerController : MonoBehaviour
 {
     // constants
-    private const float SHRINK_RATIO = 0.01f;
-    private const int START_BOUNCES = 10;
+    private const float SHRINK_RATIO = 0.05f;
+    private const int START_BOUNCES = 20;
     private const string BOUNCE_STR = "Bounces left = ";
     private const string NO_BOUNCE_STR = "No bounces left!";
     private const string DIE_STR = "YOU DIED!!";
@@ -115,7 +115,10 @@ public class PlayerController : MonoBehaviour
 			ifSlippery = false;
 		} else if (other.gameObject.CompareTag ("Slippery")) {
 			ifSlippery = true;
-		}
+        } else if (other.gameObject.CompareTag("OpenSesame")) {
+            other.gameObject.SetActive(false);
+            GameObject.FindGameObjectWithTag("Gate").SetActive(false);
+        }
 
     }
 
