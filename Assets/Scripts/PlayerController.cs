@@ -4,8 +4,17 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
+    // constants
+    private const float SHRINK_RATIO = 0.01f;
+    private const int START_BOUNCES = 10;
+    private const string BOUNCE_STR = "Bounces left = ";
+    private const string NO_BOUNCE_STR = "No bounces left!";
+    private const string DIE_STR = "YOU DIED!!";
+    
+
     public float speed;
-    public Text winText;
+    public Text bounceText;
+    public Text winDieText;
     public Slider sizeSlider;
     public Texture dirBg;
     public Texture dirNeedle;
@@ -13,12 +22,16 @@ public class PlayerController : MonoBehaviour
 	private bool ifFriction;
 	private bool ifSlippery;
 	private bool ifCollided;
+    private bool isDead;
 
     private Rigidbody2D rb;
 	private Transform tf;
     private int angle;
 	private float x;
 	private float y;
+    private int bounceCount;
+
+    
 
     void Start()
     {
@@ -28,6 +41,10 @@ public class PlayerController : MonoBehaviour
 		ifFriction = false;
 		ifCollided = false;
 		ifSlippery = false;
+        isDead = false;
+        bounceCount = START_BOUNCES;
+        bounceText.text = BOUNCE_STR + bounceCount;
+        winDieText.text = "";
 		Debug.Log ("started\t");
 
     }
@@ -42,37 +59,50 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        angle = (angle + needleSpeed) % 360;
+        if (isDead) {
+            winDieText.text = DIE_STR;
+        } else {
+            angle = (angle + needleSpeed) % 360;
 
-		if (ifSlippery == true) {
-			rb.drag = 0.01f;
-		}
-		else if (ifFriction == true) {
+		    if (ifSlippery == true) {
+			    rb.drag = 0.01f;
+		    }
+		    else if (ifFriction == true) {
 
-			rb.drag = 3;
+			    rb.drag = 3;
 
-		} else if (ifSlippery == false && ifFriction == false){
-			rb.drag = 1f;
-		}
+		    } else if (ifSlippery == false && ifFriction == false){
+			    rb.drag = 1f;
+		    }
 
-		if (ifCollided == true) {
-			if(
-			tf = GetComponent<Transform>();
-			tf.localScale -= new Vector3(0.1f, 0.01f, 0);
-			ifCollided = false;
-		}
+		    if (ifCollided == true) {
+			    tf = GetComponent<Transform>();
+			    tf.localScale -= new Vector3(SHRINK_RATIO, SHRINK_RATIO, 0);
+                UpdateBounce();
+			    ifCollided = false;
+		    }
 
-        if (Input.GetKeyDown("space"))
-        {
-            float angleRad = angle * Mathf.Deg2Rad;
-            float moveHorizontal = Mathf.Sin(angleRad);
-            float moveVertical = Mathf.Cos(angleRad);
-            Vector2 movement = new Vector2(moveHorizontal, moveVertical);
-            rb.AddForce(movement * speed );
+            if (Input.GetKeyDown("space"))
+            {
+                float angleRad = angle * Mathf.Deg2Rad;
+                float moveHorizontal = Mathf.Sin(angleRad);
+                float moveVertical = Mathf.Cos(angleRad);
+                Vector2 movement = new Vector2(moveHorizontal, moveVertical);
+                rb.AddForce(movement * speed );
+            }
+
+
         }
-			
+    }
 
-
+    void UpdateBounce() {
+        bounceCount--;
+        if (bounceCount <= 0) {
+            bounceText.text = NO_BOUNCE_STR;
+            isDead = true;
+        } else {
+            bounceText.text = BOUNCE_STR + bounceCount;
+        }
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -97,7 +127,6 @@ public class PlayerController : MonoBehaviour
 			ifCollided = true;
 			Debug.Log ("collided");
 		}
-    }
-		
+    }		
 
 }
