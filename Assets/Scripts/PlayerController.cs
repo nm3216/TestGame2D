@@ -5,7 +5,7 @@ using System.Collections;
 public class PlayerController : MonoBehaviour
 {
     // constants
-    private const float SHRINK_RATIO = 0.05f;
+    private const float SHRINK_RATIO = 0.01f;
     private const int START_BOUNCES = 20;
     private const string BOUNCE_STR = "Bounces left = ";
     private const string NO_BOUNCE_STR = "No bounces left!";
@@ -118,6 +118,12 @@ public class PlayerController : MonoBehaviour
         } else if (other.gameObject.CompareTag("OpenSesame")) {
             other.gameObject.SetActive(false);
             GameObject.FindGameObjectWithTag("Gate").SetActive(false);
+        }
+        else if (other.gameObject.CompareTag("Pickup"))
+        {
+            other.gameObject.SetActive(false);
+            tf = GetComponent<Transform>();
+            tf.localScale += new Vector3(SHRINK_RATIO, SHRINK_RATIO, 0);
         }
 
     }
