@@ -56,9 +56,9 @@ public class PlayerController : MonoBehaviour
 		}
 
 		if (ifCollided == true) {
-			if(
+			
 			tf = GetComponent<Transform>();
-			tf.localScale -= new Vector3(0.1f, 0.01f, 0);
+			tf.localScale -= new Vector3(0.01f, 0.01f, 0);
 			ifCollided = false;
 		}
 
